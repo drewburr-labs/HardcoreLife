@@ -1,0 +1,14 @@
+{
+  "name": "hardcorelife-bot-tests",
+  "private": true,
+  "description": "Simulated-player tests for HardcoreLife on a local Paper server",
+  "scripts": {
+    "test": "node run-all.js"
+  },
+  "dependencies": {
+    "mineflayer": "4.39.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

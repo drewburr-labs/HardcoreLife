@@ -1,19 +1,33 @@
 package hardcorelife.chryscorelab.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 
 import hardcorelife.chryscorelab.Touchy;
 
-public class ResetServer implements CommandExecutor {
+public class ResetServer implements BasicCommand {
 
     private static Touchy touchy = Touchy.get();
 
+    private static final String USAGE = "Deletes all world data and life values! Use '/resetserver true' to confirm.";
+
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-            @NotNull String[] args) {
+    public void execute(CommandSourceStack source, String[] args) {
+        CommandSender sender = source.getSender();
+        if (!onCommand(sender, args)) {
+            sender.sendMessage(USAGE);
+        }
+    }
+
+    @Override
+    public @Nullable String permission() {
+        return "hardcorelife.resetserver";
+    }
+
+    private boolean onCommand(CommandSender sender, String[] args) {
 
         Boolean confirm = false;
         try {
