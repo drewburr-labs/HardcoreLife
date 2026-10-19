@@ -20,7 +20,7 @@ death:
   gained_life: "You have gained a life!"
 
 join:
-  server_remaining: "The server has {lives} live(s) remaining."
+  server_remaining: "The server has {lives} lives remaining."
   server_game_over: "Oh no :c Game over! When ready, use the '/resetserver' command to restart."
   welcome: "Welcome back aboard {player}! You have {lives} live(s) remaining."
 
@@ -33,3 +33,8 @@ reset:
 error:
   unknown_player: "ERROR: Unknown player '{player}'"
   player_and_value_required: "ERROR: Player and value must be specified."
+
+usage:
+  lives: "Usage: /lives [player]"
+  setlives: "Usage: /setlives [player] <value>"
+  resetserver: "Deletes all world data and life values! Use '/resetserver true' to confirm."

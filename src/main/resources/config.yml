@@ -7,3 +7,4 @@ gamemode_on_permadeath: SPECTATOR  # Change gamemode to define when you die | Va
 server_life_scaling: 0      # The number of lives to add when a new player joins. Supports decimal values. Requires global_lives: true
 language: en_EN             # Plugin language. Bundled: en_EN | de_DE | es_ES | fr_FR | ja_JP | ko_KR | pl_PL | pt_BR | ru_RU | zh_CN. Add your own as plugins/Hardcorelife/lang/<language>.yml
 use_client_language: true   # true : Players see messages in their Minecraft client language, when available. Others use 'language' | false : Everyone uses 'language'
+reset_new_seed: false       # true : /resetserver generates the new world with a new seed | false : Keep the seed and world settings (gamerules, spawn point, difficulty)

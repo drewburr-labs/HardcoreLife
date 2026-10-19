@@ -33,3 +33,8 @@ reset:
 error:
   unknown_player: "FEHLER: Unbekannter Spieler '{player}'"
   player_and_value_required: "FEHLER: Spieler und Wert müssen angegeben werden."
+
+usage:
+  lives: "Verwendung: /lives [Spieler]"
+  setlives: "Verwendung: /setlives [Spieler] <Wert>"
+  resetserver: "Löscht alle Weltdaten und Lebenswerte! Nutze '/resetserver true' zur Bestätigung."

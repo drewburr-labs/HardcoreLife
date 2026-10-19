@@ -49,6 +49,10 @@ public class PlayerDeath implements Listener {
                 PluginManager pm = server.getPluginManager();
                 Permission resetserver = pm.getPermission("hardcorelife.resetserver");
                 resetserver.setDefault(PermissionDefault.TRUE);
+                // Resend commands so players can see /resetserver
+                for (Player p : server.getOnlinePlayers()) {
+                    p.updateCommands();
+                }
 
                 Lang.broadcast("death.server_game_over");
             }

@@ -3,7 +3,6 @@ package hardcorelife.chryscorelab.listeners;
 import hardcorelife.chryscorelab.Touchy;
 import hardcorelife.chryscorelab.helpers.PlayerLife;
 
-import org.bukkit.GameMode;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,21 +23,11 @@ public class HardcorePermadeath implements Listener {
         // Cancel events where Hardcore mode would cause permadeath
         Player player = event.getPlayer();
 
-        if (server.isHardcore() && PlayerLife.getLives(player) > 0 && event.getNewGameMode() == GameMode.SPECTATOR) {
-            // Check if within the spawn radius or near bed, likely due to respawn event.
-            // Allows spectator mode to be set outside of spawn location.
-            boolean isNearSpawn = player.getLocation().distanceSquared(player.getWorld().getSpawnLocation()) < Math
-                    .pow(server.getSpawnRadius(), 2);
-
-            boolean isNearBed = false;
-            if (player.getBedSpawnLocation() != null) {
-                isNearBed = player.getLocation().distanceSquared(player.getBedSpawnLocation()) < 3;
-            }
-
-            if (isNearSpawn || isNearBed) {
-                event.setCancelled(true);
-                logger.info("Cancelled permadeath event for " + player.getName());
-            }
+        // Vanilla puts dead players into spectator in hardcore worlds. Undo that while they still have lives.
+        // Spectator mode set for any other reason (commands, permadeath) is left alone.
+        if (event.getCause() == PlayerGameModeChangeEvent.Cause.HARDCORE_DEATH && PlayerLife.getLives(player) > 0) {
+            event.setCancelled(true);
+            logger.info("Cancelled permadeath event for " + player.getName());
         }
     }
 }

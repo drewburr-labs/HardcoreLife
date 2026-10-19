@@ -1,0 +1,16 @@
+name: Hardcorelife
+version: ${project.version}
+main: hardcorelife.chryscorelab.Touchy
+bootstrapper: hardcorelife.chryscorelab.HardcoreLifeBootstrap
+api-version: '26.1'
+load: STARTUP
+authors: [DaFray31, drewburr]
+description: Hardcorelife
+# Commands are registered in Touchy#onEnable
+permissions:
+  hardcorelife.setlives:
+    description: Allow the command /setlives - Set the life count of a player
+    default: op
+  hardcorelife.resetserver:
+    description: Allow the command /resetserver - Reset all worlds and life values
+    default: op

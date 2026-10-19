@@ -2,27 +2,56 @@ package hardcorelife.chryscorelab.commands;
 
 import org.bukkit.GameMode;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+
+import java.util.Collection;
+import java.util.List;
 
 import hardcorelife.chryscorelab.Touchy;
 import hardcorelife.chryscorelab.helpers.Lang;
 import hardcorelife.chryscorelab.helpers.PlayerLife;
 
-public class SetLives implements CommandExecutor {
+public class SetLives implements BasicCommand {
 
     private static Touchy touchy = Touchy.get();
     private static Server server = touchy.getServer();
 
+
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-            @NotNull String[] args) {
+    public void execute(CommandSourceStack source, String[] args) {
+        CommandSender sender = source.getSender();
+        if (!onCommand(sender, args)) {
+            sender.sendMessage(Lang.get(sender, "usage.setlives"));
+        }
+    }
+
+    @Override
+    public @Nullable String permission() {
+        return "hardcorelife.setlives";
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack source, String[] args) {
+        // Suggest online players for the first argument
+        if (args.length > 1) {
+            return List.of();
+        }
+        String prefix = args.length == 0 ? "" : args[0].toLowerCase();
+        return server.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .filter(name -> name.toLowerCase().startsWith(prefix))
+                .toList();
+    }
+
+    private boolean onCommand(CommandSender sender, String[] args) {
 
         Player player;
 
@@ -122,7 +151,10 @@ public class SetLives implements CommandExecutor {
             // Restrict resetserver permission
             PluginManager pm = server.getPluginManager();
             Permission resetserver = pm.getPermission("hardcorelife.resetserver");
-            resetserver.setDefault(PermissionDefault.FALSE);
+            resetserver.setDefault(PermissionDefault.OP);
+            for (Player p : server.getOnlinePlayers()) {
+                p.updateCommands();
+            }
         }
     }
 

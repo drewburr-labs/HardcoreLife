@@ -1,14 +1,15 @@
 package hardcorelife.chryscorelab;
 
 import org.bukkit.GameMode;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionDefault;
 
-import org.apache.commons.io.FileUtils;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +19,7 @@ import hardcorelife.chryscorelab.commands.ResetServer;
 import hardcorelife.chryscorelab.commands.SetLives;
 import hardcorelife.chryscorelab.helpers.Lang;
 import hardcorelife.chryscorelab.helpers.PlayerLife;
+import hardcorelife.chryscorelab.helpers.WorldReset;
 import hardcorelife.chryscorelab.listeners.HardcorePermadeath;
 import hardcorelife.chryscorelab.listeners.PlayerDeath;
 import hardcorelife.chryscorelab.listeners.PlayerJoinServer;
@@ -26,24 +28,23 @@ import net.kyori.adventure.text.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class Touchy extends JavaPlugin {
 
     private static Touchy instance;
-    private static boolean reset_on_unload = false;
-    private static Server server;
     private static FileConfiguration config;
     private static FileConfiguration livesConfig;
 
     @Override
     public void onEnable() {
         instance = this;
-        server = this.getServer();
 
         // Plugin startup logic
         saveDefaultConfig();
@@ -55,9 +56,12 @@ public final class Touchy extends JavaPlugin {
         Lang.load(this, config.getString("language", Lang.DEFAULT_LANGUAGE),
                 config.getBoolean("use_client_language", true));
 
-        Objects.requireNonNull(getCommand("lives")).setExecutor(new Lives());
-        Objects.requireNonNull(getCommand("setlives")).setExecutor(new SetLives());
-        Objects.requireNonNull(getCommand("resetserver")).setExecutor(new ResetServer());
+        getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            Commands commands = event.registrar();
+            commands.register("lives", "Show a player's current life count", new Lives());
+            commands.register("setlives", "Set the life count of a player", new SetLives());
+            commands.register("resetserver", "Reset all worlds and life values", new ResetServer());
+        });
 
         PluginManager pm = getServer().getPluginManager();
 
@@ -65,6 +69,11 @@ public final class Touchy extends JavaPlugin {
         pm.registerEvents(new PlayerJoinServer(), this);
         pm.registerEvents(new WorldLoad(), this);
         pm.registerEvents(new HardcorePermadeath(), this);
+
+        // Game over survives restarts, so let everyone use /resetserver again
+        if (globalLivesEnabled() && PlayerLife.getServerLives() == 0) {
+            pm.getPermission("hardcorelife.resetserver").setDefault(PermissionDefault.TRUE);
+        }
 
         // Setup bStats
         new Metrics(this, 12723);
@@ -74,9 +83,6 @@ public final class Touchy extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         PlayerLife.saveLivesData();
-        if (reset_on_unload) {
-            deleteWorldData();
-        }
         instance = null;
     }
 
@@ -93,31 +99,42 @@ public final class Touchy extends JavaPlugin {
             p.kick(Component.text(Lang.get(p, "reset.kick")));
         }
 
-        // Delete existing lives.yml
+        // Delete existing lives.yml, and drop the in-memory copy so it isn't saved again on shutdown
         getLivesConfigFile().delete();
+        livesConfig = new YamlConfiguration();
         // Clear playerlife cache
         PlayerLife.clearLivesData();
 
-        logger.info("Restarting the server..");
-        reset_on_unload = true;
-        getServer().spigot().restart();
-    }
-
-    private void deleteWorldData() {
-        Logger logger = getServer().getLogger();
-        logger.info("Deleting all world data");
-
-        for (World world : server.getWorlds()) {
-            String worldName = world.getName();
-            logger.info("Deleting: " + world.getName());
-
-            try {
-                FileUtils.deleteDirectory(world.getWorldFolder());
-            } catch (Exception e) {
-                logger.severe("Failed to delete world: " + worldName);
-                logger.severe(e.getMessage());
+        // Delete all worlds on the next startup. The level directory contains the default world's
+        // dimensions and all player data
+        Path levelDirectory = getServer().getLevelDirectory();
+        List<Path> deletePaths = new ArrayList<>();
+        deletePaths.add(levelDirectory);
+        for (World world : getServer().getWorlds()) {
+            deletePaths.add(world.getWorldPath());
+        }
+        List<Path> keepPaths = new ArrayList<>();
+        if (!resetNewSeedEnabled()) {
+            // Keep the seed and world settings. Each dimension stores its own seed and gamerules
+            keepPaths.add(levelDirectory.resolve("level.dat"));
+            keepPaths.add(levelDirectory.resolve("level.dat_old"));
+            for (World world : getServer().getWorlds()) {
+                Path worldData = world.getWorldPath().resolve("data");
+                keepPaths.add(worldData.resolve("minecraft").resolve("world_gen_settings.dat"));
+                keepPaths.add(worldData.resolve("minecraft").resolve("game_rules.dat"));
+                // Without these, Paper treats the dimension as an old world and runs its storage migration
+                keepPaths.add(worldData.resolve("paper").resolve("metadata.dat"));
+                keepPaths.add(worldData.resolve("paper").resolve("level_overrides.dat"));
             }
         }
+        try {
+            WorldReset.schedule(getDataFolder().toPath(), deletePaths, keepPaths);
+        } catch (IOException e) {
+            logger.severe("Failed to schedule world deletion: " + e.getMessage());
+        }
+
+        logger.info("Restarting the server..");
+        getServer().restart();
     }
 
     private FileConfiguration getLivesConfig() {
@@ -198,6 +215,11 @@ public final class Touchy extends JavaPlugin {
     public boolean naturalRegEnabled() {
         // Returns the value of natural_regeneration from config.yml
         return getConfig().getBoolean("natural_regeneration", false);
+    }
+
+    public boolean resetNewSeedEnabled() {
+        // Returns the value of reset_new_seed from config.yml
+        return config.getBoolean("reset_new_seed", false);
     }
 
     public boolean killGainLivesEnabled() {

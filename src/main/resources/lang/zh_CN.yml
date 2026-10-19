@@ -33,3 +33,8 @@ reset:
 error:
   unknown_player: "错误：未知玩家 '{player}'"
   player_and_value_required: "错误：必须指定玩家和数值。"
+
+usage:
+  lives: "用法：/lives [玩家]"
+  setlives: "用法：/setlives [玩家] <数值>"
+  resetserver: "将删除所有世界数据和生命数据！使用 '/resetserver true' 确认。"
