@@ -51,7 +51,7 @@ Before Submitting A Bug Report **Perform a search** to see if the problem has al
 
 #### How Do I Submit A (Good) Bug Report?
 
-Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue and provide the following information by filling in [the template](https://github.com/Chryscorelab/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/bug_report.md).
+Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). Create an issue and provide the following information by filling in [the template](https://github.com/drewburr-labs/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/bug_report.md).
 
 Explain the problem and include additional details to help maintainers reproduce the problem:
 
@@ -81,7 +81,7 @@ Include details about your configuration and environment:
 
 Enhancements include completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion :pencil: and find related suggestions :mag_right:.
 
-Before creating enhancement suggestions, please check [this list](#before-submitting-an-enhancement-suggestion) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please [include as many details as possible](#how-do-i-submit-a-good-enhancement-suggestion). Fill in [the template](https://github.com/Chryscorelab/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/feature_request.md), including the steps that you imagine you would take if the feature you're requesting existed.
+Before creating enhancement suggestions, please check [this list](#before-submitting-an-enhancement-suggestion) as you might find out that you don't need to create one. When you are creating an enhancement suggestion, please [include as many details as possible](#how-do-i-submit-a-good-enhancement-suggestion). Fill in [the template](https://github.com/drewburr-labs/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/feature_request.md), including the steps that you imagine you would take if the feature you're requesting existed.
 
 #### Before Submitting An Enhancement Suggestion
 
@@ -89,7 +89,7 @@ Before Submitting An Enhancement Suggestion, perform a search to see if the enha
 
 #### How Do I Submit A (Good) Enhancement Suggestion?
 
-Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/). We ask that you provide the following information in your issue via [the template](https://github.com/Chryscorelab/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/feature_request.md):
+Enhancement suggestions are tracked as [GitHub issues](https://guides.github.com/features/issues/). We ask that you provide the following information in your issue via [the template](https://github.com/drewburr-labs/HardcoreLife/blob/master/.github/ISSUE_TEMPLATE/feature_request.md):
 
 - Use a clear and descriptive title for the issue to identify the suggestion.
 - Provide a step-by-step description of the suggested enhancement in as many details as possible.
@@ -164,4 +164,4 @@ All Java code should be linted with [Prettier](https://prettier.io/) before comi
 
 ### Issues and Projects
 
-The core contriubutors may assign an issue to an active [project](https://github.com/Chryscorelab/HardcoreLife/projects). This normally means we're actively considering the issue and how to resolve it. Conversation arount the issue should be contained to the related issue, including status updates and implementation questions.
+The core contriubutors may assign an issue to an active [project](https://github.com/drewburr-labs/HardcoreLife/projects). This normally means we're actively considering the issue and how to resolve it. Conversation arount the issue should be contained to the related issue, including status updates and implementation questions.
