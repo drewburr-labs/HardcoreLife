@@ -50,32 +50,6 @@ On Windows, point `restart-script` to a `.bat` file instead. If the script is mi
 
 **Option 2: Your server manager.** If the server runs under something that starts it again when it stops, such as a hosting panel with auto-restart, systemd (`Restart=always`) or Docker (`--restart unless-stopped`), no script is needed. Don't use both options together, or two servers may start at once.
 
-### Crafty Controller
-
-Don't let the restart script start Java itself under Crafty: Crafty would lose track of the server. Use one of these instead:
-
-- **Crash detection:** In the server's Crafty config, turn on **Crash Detection** and remove `0` from **Ignored Exit Codes**. Crafty checks for a stopped server every 30 seconds, so the restart can take up to 30 seconds to begin. Crafty also restarts the server after a normal `stop`.
-- **Restart script that calls Crafty's API:** Starts the server again a few seconds after it stops, and only after a restart, not a normal `stop`. Create an API key in Crafty for a user with the **Commands** permission on the server, then use this as the restart script:
-
-  ```sh
-  #!/bin/sh
-  # Paper runs this on /restart. Ask Crafty to start the server as soon as this one has exited.
-  CRAFTY_URL="https://localhost:8443"   # your Crafty panel address
-  CRAFTY_TOKEN="paste-api-token-here"   # Crafty API key with the Commands permission on this server
-  SERVER_ID="paste-server-id-here"      # the server's ID, shown in its Crafty URL
-
-  JAVA_PID=$PPID   # Paper launches this script, so its parent is the server process
-  (
-    while kill -0 "$JAVA_PID" 2>/dev/null; do sleep 1; done
-    sleep 2   # let Crafty see that the old process exited
-    curl -sk -X POST \
-      -H "Authorization: Bearer $CRAFTY_TOKEN" \
-      "$CRAFTY_URL/api/v2/servers/$SERVER_ID/action/start_server"
-  ) >/dev/null 2>&1 &
-  ```
-
-  With this script, keep `0` in **Ignored Exit Codes** (or crash detection off), so Crafty doesn't also restart the server.
-
 ## Config
 
 See the `config.yml` file of the plugin, more details in the [Wiki](https://github.com/drewburr-labs/HardcoreLife/wiki/Config-files)
