@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      artifact: hardcorelife-${{ steps.get_version.outputs.VERSION }}
+      project_version: ${{ steps.get_project_version.outputs.PROJECT_VERSION }}
 
     steps:
       - name: Checkout repository
@@ -31,6 +34,10 @@ jobs:
           mkdir staging && cp target/*.jar staging
           rm staging/original-*.jar
 
+      - name: Read the project version from pom.xml
+        id: get_project_version
+        run: echo "PROJECT_VERSION=$(./mvnw --batch-mode --quiet help:evaluate -Dexpression=project.version -DforceStdout)" >> "$GITHUB_OUTPUT"
+
       - name: Set the build version name
         id: get_version
         # Artifact names can't contain slashes, which branch names often do
@@ -41,3 +48,54 @@ jobs:
         with:
           name: hardcorelife-${{ steps.get_version.outputs.VERSION }}
           path: staging
+
+  release:
+    # Publish a GitHub release when a semver tag is pushed, or when master
+    # carries a pom.xml version that hasn't been released yet
+    needs: build
+    if: github.event_name == 'push' && (github.ref_type == 'tag' || github.ref_name == 'master')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Decide whether to release
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROJECT_VERSION: ${{ needs.build.outputs.project_version }}
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            if [[ "$GITHUB_REF_NAME" != "$PROJECT_VERSION" ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match pom.xml version $PROJECT_VERSION"
+              exit 1
+            fi
+          elif [[ "$PROJECT_VERSION" == *-SNAPSHOT ]]; then
+            echo "::notice::Skipping release of snapshot version $PROJECT_VERSION"
+            exit 0
+          fi
+          if gh release view "$PROJECT_VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::notice::Release $PROJECT_VERSION already exists"
+            exit 0
+          fi
+          echo "VERSION=$PROJECT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download build artifact(s)
+        if: steps.check.outputs.VERSION
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact }}
+          path: staging
+
+      - name: Create the release
+        if: steps.check.outputs.VERSION
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.check.outputs.VERSION }}
+        # Creates the tag at this commit if it doesn't exist yet
+        run: |
+          gh release create "$VERSION" staging/*.jar \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$VERSION" \
+            --generate-notes
