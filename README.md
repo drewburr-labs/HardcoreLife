@@ -9,7 +9,7 @@ Minecraft Plugin for a Hardcore survival multiplayer with life system with 2 opt
 
 **Supports [PaperMC](https://papermc.io/downloads) 26.1-26.3** (requires Java 25). This is a Paper plugin: it does not run on Bukkit or Spigot.
 
-This is a fork of [Chryscorelab/HardcoreLife](https://github.com/Chryscorelab/HardcoreLife), updated for Paper 26.x. Downloads are on the [releases page](https://github.com/drewburr-labs/HardcoreLife/releases). The original project's [wiki](https://github.com/Chryscorelab/HardcoreLife/wiki/Home) was written for 2.x, but most of it still applies.
+This is a fork of [Chryscorelab/HardcoreLife](https://github.com/Chryscorelab/HardcoreLife), updated for Paper 26.x. Downloads are on the [releases page](https://github.com/drewburr-labs/HardcoreLife/releases). See the [wiki](https://github.com/drewburr-labs/HardcoreLife/wiki) for setup, commands and configuration, and [Upgrading from 2.x](https://github.com/drewburr-labs/HardcoreLife/wiki/Upgrading-from-2.x) for what changed in 3.0.
 
 ---
 
@@ -21,9 +21,11 @@ This is a fork of [Chryscorelab/HardcoreLife](https://github.com/Chryscorelab/Ha
 
 `/resetserver` : Delete all worlds and reset the life count. When global lives is enabled and the life count hits 0, this command becomes gloally accessible.
 
-More details [here](https://github.com/Chryscorelab/HardcoreLife/wiki/Commands)
+More details [here](https://github.com/drewburr-labs/HardcoreLife/wiki/Commands)
 
 ## Restarting after `/resetserver`
+
+More details on the wiki's [Resetting the server](https://github.com/drewburr-labs/HardcoreLife/wiki/Resetting-the-server) page.
 
 `/resetserver` kicks everyone and restarts the server. The worlds are deleted when the server starts back up, before any world is loaded. **If the server does not start again by itself, the reset only happens on the next manual start.**
 
@@ -76,7 +78,7 @@ Don't let the restart script start Java itself under Crafty: Crafty would lose t
 
 ## Config
 
-See the `config.yml` file of the plugin, more details in the [Wiki](https://github.com/Chryscorelab/HardcoreLife/wiki/Config-files)
+See the `config.yml` file of the plugin, more details in the [Wiki](https://github.com/drewburr-labs/HardcoreLife/wiki/Config-files)
 
 `reset_new_seed` controls what `/resetserver` keeps:
 
