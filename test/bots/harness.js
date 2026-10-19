@@ -111,8 +111,11 @@ class Server {
   }
 }
 
-async function connectBot (name) {
+// locale is the client language the bot reports (mineflayer sends en_US by default)
+async function connectBot (name, locale = null) {
   const bot = mineflayer.createBot({ host: 'localhost', port: PORT, username: name, version: VERSION, auth: 'offline' })
+  // bot.settings exists once plugins are injected, which happens before login sends it
+  if (locale) bot.once('inject_allowed', () => { bot.settings.locale = locale })
   bot.chatLog = []
   bot.commandNames = new Set()
   bot.on('messagestr', m => bot.chatLog.push(m))

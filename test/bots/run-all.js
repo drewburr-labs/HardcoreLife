@@ -6,7 +6,8 @@ const scenarios = [
   ['global.js'],
   ['global.js', 'hardcore'],
   ['perplayer.js'],
-  ['perplayer.js', 'hardcore']
+  ['perplayer.js', 'hardcore'],
+  ['locale.js']
 ]
 
 const failed = []

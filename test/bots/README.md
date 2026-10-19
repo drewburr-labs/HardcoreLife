@@ -7,7 +7,9 @@ They cover:
 - **Global lives:** deaths drain the shared lives, game over puts everyone in spectator (including new players), and non-op players can use `/resetserver` once the game is over, even after a restart. After the reset, players are back in survival with the starting lives.
 - **Per-player lives:** each player's own life count, permadeath with movement frozen, gaining a life for a kill, and reviving a player with `/setlives`.
 
-Each scenario runs with and without `hardcore=true`.
+- **Languages:** players see messages in their client language (`de_DE`, `fr_FR`, and so on), broadcasts reach each player in their own language, `pt_PT` falls back to `pt_BR`, unbundled languages and the console use the server language, and `use_client_language: false` sends everyone the server language.
+
+The lives scenarios run with and without `hardcore=true`.
 
 The tests run on Paper 26.1.2, because mineflayer doesn't support later Minecraft versions yet.
 
@@ -37,4 +39,5 @@ To run one scenario:
 ```sh
 MINECRAFT_EULA=true node global.js
 MINECRAFT_EULA=true node perplayer.js hardcore
+MINECRAFT_EULA=true node locale.js
 ```

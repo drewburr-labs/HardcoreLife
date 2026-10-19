@@ -7,18 +7,18 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 
 import hardcorelife.chryscorelab.Touchy;
+import hardcorelife.chryscorelab.helpers.Lang;
 
 public class ResetServer implements BasicCommand {
 
     private static Touchy touchy = Touchy.get();
 
-    private static final String USAGE = "Deletes all world data and life values! Use '/resetserver true' to confirm.";
 
     @Override
     public void execute(CommandSourceStack source, String[] args) {
         CommandSender sender = source.getSender();
         if (!onCommand(sender, args)) {
-            sender.sendMessage(USAGE);
+            sender.sendMessage(Lang.get(sender, "usage.resetserver"));
         }
     }
 

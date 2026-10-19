@@ -1,4 +1,4 @@
-# HardcoreLife 3.0.0
+# HardcoreLife 3.1.0
 
 [![HardcoreLife](https://www.spigotmc.org/data/resource_icons/91/91375.jpg?1618568731)](https://github.com/drewburr-labs/HardcoreLife)
 
@@ -7,7 +7,7 @@ Minecraft Plugin for a Hardcore survival multiplayer with life system with 2 opt
 - Global Lives: The server shares lives wit hall players. If a player dies, everyone loses a life.
 - Player Lives: Players have their own set of lives.
 
-**Supports [PaperMC](https://papermc.io/downloads) 26.1-26.3** (requires Java 25). This is a Paper plugin: it does not run on Bukkit or Spigot.
+**Supports [PaperMC](https://papermc.io/downloads) 26.1+** (requires Java 25). This is a Paper plugin: it does not run on Bukkit or Spigot.
 
 This is a fork of [Chryscorelab/HardcoreLife](https://github.com/Chryscorelab/HardcoreLife), updated for Paper 26.x. Downloads are on the [releases page](https://github.com/drewburr-labs/HardcoreLife/releases). See the [wiki](https://github.com/drewburr-labs/HardcoreLife/wiki) for setup, commands and configuration, and [Upgrading from 2.x](https://github.com/drewburr-labs/HardcoreLife/wiki/Upgrading-from-2.x) for what changed in 3.0.
 
@@ -86,6 +86,29 @@ See the `config.yml` file of the plugin, more details in the [Wiki](https://gith
 - `true`: The new world is generated with a new seed.
 
 Either way, all chunks, player data (inventories, advancements, stats) and lives are reset.
+
+## Languages
+
+Players see messages in their own Minecraft client language when it's available. Otherwise they get the server language, set with `language` in `config.yml`. A player whose region isn't bundled gets the closest match (e.g. `de_at` uses `de_DE`, `pt_pt` uses `pt_BR`). Console messages and broadcasts to the console always use the server language. Set `use_client_language: false` to send everyone the server language.
+
+Bundled languages:
+
+- `en_EN` - English (default)
+- `de_DE` - Deutsch
+- `es_ES` - Español
+- `fr_FR` - Français
+- `ja_JP` - 日本語
+- `ko_KR` - 한국어
+- `pl_PL` - Polski
+- `pt_BR` - Português (Brasil)
+- `ru_RU` - Русский
+- `zh_CN` - 简体中文
+
+Translations other than English and French were machine-assisted; corrections from native speakers are very welcome.
+
+Language files are copied to `plugins/Hardcorelife/lang/` on startup and can be edited freely. To add a new language, copy `en_EN.yml` to a new file (e.g. `de_DE.yml`), translate the messages, and set `language: de_DE`. Any message missing from a language file falls back to English. Placeholders like `{player}` and `{lives}` are filled in automatically.
+
+Translations are welcome! Feel free to open a pull request adding a file under `src/main/resources/lang/`.
 
 ## Dependencies
 

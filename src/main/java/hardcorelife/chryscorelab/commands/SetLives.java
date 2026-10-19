@@ -16,22 +16,20 @@ import java.util.Collection;
 import java.util.List;
 
 import hardcorelife.chryscorelab.Touchy;
+import hardcorelife.chryscorelab.helpers.Lang;
 import hardcorelife.chryscorelab.helpers.PlayerLife;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 
 public class SetLives implements BasicCommand {
 
     private static Touchy touchy = Touchy.get();
     private static Server server = touchy.getServer();
 
-    private static final String USAGE = "Usage: /setlives [player] <value>";
 
     @Override
     public void execute(CommandSourceStack source, String[] args) {
         CommandSender sender = source.getSender();
         if (!onCommand(sender, args)) {
-            sender.sendMessage(USAGE);
+            sender.sendMessage(Lang.get(sender, "usage.setlives"));
         }
     }
 
@@ -68,12 +66,13 @@ public class SetLives implements BasicCommand {
             } else {
                 player = server.getPlayer(args[0]);
                 if (!(player instanceof Player)) {
-                    sender.sendMessage("ERROR: Unknown player '" + args[0] + "'");
+                    sender.sendMessage(Lang.get(sender, "error.unknown_player", "player", args[0]));
                     return false;
                 } else {
                     boolean success = updateLives(player, args[1]);
                     if (success) {
-                        sender.sendMessage("Changed " + args[0] + "'s life count to " + args[1]);
+                        sender.sendMessage(
+                                Lang.get(sender, "setlives.changed_player", "player", args[0], "lives", args[1]));
                     }
                     return success;
                 }
@@ -87,7 +86,7 @@ public class SetLives implements BasicCommand {
                 player = (Player) sender;
                 return updateLives(player, args[0]);
             } else {
-                sender.sendMessage("ERROR: Player and value must be specified.");
+                sender.sendMessage(Lang.get(sender, "error.player_and_value_required"));
                 return false;
             }
         } else {
@@ -113,7 +112,7 @@ public class SetLives implements BasicCommand {
         int lifeCount = Integer.parseInt(lifeArg);
         int oldCount = PlayerLife.getLives(player);
         PlayerLife.forceSetLives(player, lifeCount);
-        player.sendMessage("Your life count has been changed to: " + String.valueOf(lifeCount));
+        player.sendMessage(Lang.get(player, "setlives.changed_self", "lives", lifeCount));
         if (oldCount == 0) {
             revivePlayer(player);
         }
@@ -127,9 +126,7 @@ public class SetLives implements BasicCommand {
         int lifeCount = Integer.parseInt(lifeArg);
         int oldCount = PlayerLife.getServerLives();
         PlayerLife.forceSetServerLives(lifeCount);
-        TextComponent updateComp = Component
-                .text("The server's life count has been changed to: " + String.valueOf(lifeCount));
-        server.broadcast(updateComp);
+        Lang.broadcast("setlives.changed_server", "lives", lifeCount);
         if (oldCount == 0) {
             reviveServer();
         }
